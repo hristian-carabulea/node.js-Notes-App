@@ -1,18 +1,12 @@
 const fs = require("fs");
 const chalk = require("chalk");
-const { remove } = require("lodash");
 
-let getNotes = function () {
-    return "Your notes..."
-}
-
-const addNote = function(title, body) {
+// const addNote = function(title, body) {
+const addNote = (title, body) => { // Must be exported. See end of file. refactored.
   const notes = loadNotes();
-  const duplicateNotes = notes.filter(function(note){
-    return note.title === title
-  })
-
-  if (duplicateNotes.length === 0) {
+  const duplicateNote = notes.find((note) => note.title === title)// refactored
+  
+  if (!duplicateNote) {
     notes.push({
       title:title,
       body: body
@@ -27,28 +21,46 @@ const addNote = function(title, body) {
 
 }
 
-// Create and export a removeNote function from notes.js
-const removeNote = function(title) {
+const removeNote = (title) => { // Must be exported. See end of file. refactored
   const notes = loadNotes(); // load existing nodes
-  const remainingNotes = notes.filter(function(note){
-    return note.title != title
-  })
-
-  if (notes.length > remainingNotes.length){
+  const notesToKeep = notes.filter((note) => note.title != title)
+ 
+  if (notes.length > notesToKeep.length){
      console.log(chalk.green.inverse("Note removed!"));
-     saveNotes(remainingNotes);
+     saveNotes(notesToKeep);
   }
   else {
     console.log(chalk.red.inverse("No note found"));
   }
 }
 
-const saveNotes = function (notes) {
+const listNotes = () => { //Must be exported. See end of file.
+  const notes = loadNotes()
+  console.log(chalk.inverse("Your notes"))
+  notes.forEach((note) => {
+    console.log(note.title)
+  });
+}
+
+const readNote = (title) => { // Must be exported. See end of file.
+  const notes = loadNotes()
+  const note = notes.find((note) => note.title === title)
+
+  if (note) {
+    console.log(chalk.inverse(note.title))
+    console.log(note.body)
+  }
+  else {
+    console.log(chalk.red.inverse("Note not found!"))
+  }
+}
+
+const saveNotes =  (notes) => {
   const dataJSON = JSON.stringify(notes);
   fs.writeFileSync("notes.json", dataJSON);
 }
 
-const loadNotes = function () {
+const loadNotes = (notes) => {
   try {
     const dataBuffer = fs.readFileSync("notes.json");
     const dataJSON = dataBuffer.toString();
@@ -57,13 +69,12 @@ const loadNotes = function () {
   } catch(e) {
     return[]
   }
-
-
 }
 
 // all functions above must be exported except saveNotes and loadNotes, which are not required by other files
 module.exports = {
-	getNotes: getNotes,
 	addNote: addNote,
-  removeNote: removeNote
+  removeNote: removeNote,
+  listNotes: listNotes,
+  readNote: readNote
 };

@@ -28,7 +28,8 @@ yargs.command({
       type: "string"
     }
   },
-  handler: function(argv) {
+//  handler: function(argv) {
+  handler(argv) { // refactored ESS6  
     notes.addNote(argv.title, argv.body);
   }
 });
@@ -46,7 +47,8 @@ yargs.command({
     }
   },
   // Call removeNote in remove command handler
-  handler: function(argv) {
+//  handler: function(argv) {
+  handler(argv) { // refactored ESS6  
     notes.removeNote(argv.title);
   }
 });
@@ -54,9 +56,31 @@ yargs.command({
 // Create list command
 yargs.command({
   command: "list",
-  describe: "List all notes.",
-  handler: function() {
-    console.log("Listing all the notes.");
+  describe: "List all the notes.",
+//  handler: function() {
+  handler() { // refactored ESS6
+    notes.listNotes();
+  }
+});
+
+yargs.command({
+  command: "add",
+  describe: "List all the notes.",
+  builder: {
+    title: {
+      describe: "Note title",
+      demandOption: true,
+      type: "string"
+    },
+    body: {
+      describe: "Note body",
+      demandOption: true,
+      type: "string"
+    }
+  },
+//  handler: function(argv) {
+  handler(argv) { // refactored ESS6  
+    notes.addNote(argv.title, argv.body);
   }
 });
 
@@ -64,8 +88,15 @@ yargs.command({
 yargs.command({
   command: "read",
   describe: "Read a note.",
-  handler: function() {
-    console.log("Reading a note.");
+  builder: {
+    title: {
+      describe: "Note title",
+      demandOption: true,
+      type: "string"
+    }
+  },
+  handler(argv) {   // refactored
+    notes.readNote(argv.title);
   }
 });
 
